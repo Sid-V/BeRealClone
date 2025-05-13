@@ -1,16 +1,8 @@
-import { Text, View } from "react-native";
+import { useAuth } from '@/contexts/AuthContext';
+import { Redirect } from 'expo-router';
 
 export default function Index() {
-  return (
-    <View
-      style={{
-        flex: 1,
-        justifyContent: "center",
-        alignItems: "center",
-      }}
-    >
-      <Text> Hello world</Text>
-      <Text>Edit app/index.tsx to edit this screen.</Text>
-    </View>
-  );
+  const { isAuthenticated } = useAuth();
+  
+  return <Redirect href={isAuthenticated ? "/(tabs)" : "/(auth)/login"} />;
 }
