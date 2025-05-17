@@ -11,9 +11,8 @@ export default function VerifyScreen() {
   const [isLoading, setIsLoading] = useState(false);
   const { verifyOtp, phoneNumber } = useAuth();
   const router = useRouter();
-
   const handleVerify = async () => {
-    if (otp.length !== 6) return;
+    if (otp.length !== 4) return;
     
     try {
       setError('');
@@ -39,18 +38,18 @@ export default function VerifyScreen() {
         Verify your number
       </ThemedText>
       <ThemedText style={styles.subtitle}>
-        Enter the 6-digit code sent to {phoneNumber}
+        Enter the 4-digit code sent to {phoneNumber}
       </ThemedText>
       <TextInput
         style={[styles.input, error ? styles.inputError : undefined]}
         placeholder="Enter OTP"
         value={otp}
         onChangeText={(text) => {
-          setOtp(text.replace(/[^0-9]/g, '').slice(0, 6));
+          setOtp(text.replace(/[^0-9]/g, '').slice(0, 4));
           setError('');
         }}
         keyboardType="number-pad"
-        maxLength={6}
+        maxLength={4}
         editable={!isLoading}
       />
       {error ? (
@@ -59,10 +58,10 @@ export default function VerifyScreen() {
       <TouchableOpacity
         style={[
           styles.button,
-          (otp.length !== 6 || isLoading) && styles.buttonDisabled
+          (otp.length !== 4 || isLoading) && styles.buttonDisabled
         ]}
         onPress={handleVerify}
-        disabled={otp.length !== 6 || isLoading}
+        disabled={otp.length !== 4 || isLoading}
       >
         <ThemedText style={styles.buttonText}>
           {isLoading ? 'Verifying...' : 'Verify'}

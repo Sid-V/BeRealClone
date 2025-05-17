@@ -1,7 +1,7 @@
 import { ThemedText } from '@/components/ThemedText';
 import { ThemedView } from '@/components/ThemedView';
 import { useAuth } from '@/contexts/AuthContext';
-import { StyleSheet } from 'react-native';
+import { StyleSheet, TouchableOpacity } from 'react-native';
 
 export default function HomeScreen() {
   const { phoneNumber, logout } = useAuth();
@@ -15,6 +15,10 @@ export default function HomeScreen() {
       <ThemedText style={styles.description}>
         Your daily photo reminder will appear here!
       </ThemedText>
+      
+      <TouchableOpacity style={styles.logoutButton} onPress={logout}>
+        <ThemedText style={styles.logoutText}>Logout</ThemedText>
+      </TouchableOpacity>
     </ThemedView>
   );
 }
@@ -32,5 +36,18 @@ const styles = StyleSheet.create({
   },
   description: {
     textAlign: 'center',
+  },
+  logoutButton: {
+    marginTop: 30,
+    backgroundColor: '#ff3b30',
+    padding: 15,
+    borderRadius: 8,
+    width: 200,
+    alignItems: 'center',
+  },
+  logoutText: {
+    color: 'white',
+    fontSize: 16,
+    fontWeight: 'bold',
   },
 });
