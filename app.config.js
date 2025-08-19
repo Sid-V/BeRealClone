@@ -30,9 +30,9 @@ export default {
       favicon: './assets/images/favicon.png'
     },
     extra: {
-      twilioAccountSid: process.env.TWILIO_ACCOUNT_SID,
-      twilioAuthToken: process.env.TWILIO_AUTH_TOKEN,
-      twilioServiceSid: process.env.TWILIO_SERVICE_SID,
+      TWILIO_ACCOUNT_SID: process.env.TWILIO_ACCOUNT_SID,
+      TWILIO_AUTH_TOKEN: process.env.TWILIO_AUTH_TOKEN,
+      TWILIO_SERVICE_SID: process.env.TWILIO_SERVICE_SID,
     },
   },
 };

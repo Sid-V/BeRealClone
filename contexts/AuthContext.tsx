@@ -1,7 +1,7 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import React, { createContext, useContext, useEffect, useState } from 'react';
 import base64 from 'react-native-base64';
-import { MOCK_AUTH, TWILIO_CONFIG, validatePhoneNumber } from '../config/auth';
+import { MOCK_AUTH, TWILIO_CONFIG, validatePhoneNumber, validateTwilioConfig } from '../config/auth';
 
 type AuthContextType = {
   isAuthenticated: boolean;
@@ -16,10 +16,20 @@ const AuthContext = createContext<AuthContextType | null>(null);
 
 // Helper function for Twilio API calls
 const twilioFetch = async (endpoint: string, body: Record<string, string>) => {
+  // Validate configuration before making API calls
+  validateTwilioConfig();
+  
   const auth = base64.encode(`${TWILIO_CONFIG.accountSid}:${TWILIO_CONFIG.authToken}`);
   // Using the v2 Verify API endpoints
   const baseUrl = `https://verify.twilio.com/v2/Services/${TWILIO_CONFIG.serviceSid}`;
   const url = `${baseUrl}/${endpoint}`;
+  
+  console.log('Making Twilio API call:', {
+    url,
+    endpoint,
+    hasAuth: !!auth,
+    bodyKeys: Object.keys(body)
+  });
   
   try {
     const response = await fetch(url, {
@@ -34,6 +44,12 @@ const twilioFetch = async (endpoint: string, body: Record<string, string>) => {
     });
 
     const responseData = await response.json();
+    
+    console.log('Twilio API response:', {
+      status: response.status,
+      ok: response.ok,
+      data: responseData
+    });
     
     if (!response.ok) {
       throw new Error(responseData.message || `Twilio API error: ${response.status}`);

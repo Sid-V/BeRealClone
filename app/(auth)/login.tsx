@@ -1,32 +1,33 @@
+import { ThemedButton } from '@/components/ThemedButton';
+import { ThemedInput } from '@/components/ThemedInput';
 import { ThemedText } from '@/components/ThemedText';
 import { ThemedView } from '@/components/ThemedView';
 import { useAuth } from '@/contexts/AuthContext';
+import { useForm } from '@/hooks/useForm';
 import { useRouter } from 'expo-router';
-import { useState } from 'react';
-import { StyleSheet, TextInput, TouchableOpacity } from 'react-native';
+import { StyleSheet } from 'react-native';
 
 export default function LoginScreen() {
-  const [phone, setPhone] = useState('');
-  const [error, setError] = useState('');
-  const [isLoading, setIsLoading] = useState(false);
   const { login } = useAuth();
   const router = useRouter();
+  const { values, errors, isLoading, setValue, setError, setLoading } = useForm({
+    phone: '',
+  });
 
   const handleLogin = async () => {
     try {
-      setError('');
-      setIsLoading(true);
-      const success = await login(phone);
+      setLoading(true);
+      const success = await login(values.phone);
       if (success) {
         router.push('/(auth)/verify');
       } else {
-        setError('Failed to send verification code. Please try again.');
+        setError('phone', 'Failed to send verification code. Please try again.');
       }
     } catch (error) {
       console.error('Login error:', error);
-      setError('Something went wrong. Please try again.');
+      setError('phone', 'Something went wrong. Please try again.');
     } finally {
-      setIsLoading(false);
+      setLoading(false);
     }
   };
 
@@ -38,79 +39,51 @@ export default function LoginScreen() {
       <ThemedText style={styles.subtitle}>
         Enter your phone number to continue
       </ThemedText>
-      <TextInput
-        style={[styles.input, error ? styles.inputError : undefined]}
+      
+      <ThemedInput
+        hasError={!!errors.phone}
         placeholder="Phone Number"
-        value={phone}
-        onChangeText={(text) => {
-          setPhone(text);
-          setError('');
-        }}
+        value={values.phone}
+        onChangeText={(text) => setValue('phone', text)}
         keyboardType="phone-pad"
         autoComplete="tel"
         editable={!isLoading}
       />
-      {error ? (
-        <ThemedText style={styles.errorText}>{error}</ThemedText>
-      ) : null}
-      <TouchableOpacity
-        style={[
-          styles.button,
-          (!phone || isLoading) && styles.buttonDisabled
-        ]}
+      
+      {errors.phone && (
+        <ThemedText style={styles.errorText}>{errors.phone}</ThemedText>
+      )}
+      
+      <ThemedButton
+        title="Continue"
         onPress={handleLogin}
-        disabled={!phone || isLoading}
-      >
-        <ThemedText style={styles.buttonText}>
-          {isLoading ? 'Sending code...' : 'Continue'}
-        </ThemedText>
-      </TouchableOpacity>
+        disabled={!values.phone || isLoading}
+        loading={isLoading}
+        loadingText="Sending code..."
+      />
     </ThemedView>
   );
 }
 
+import { COLORS, SPACING } from '@/constants/Theme';
+
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    padding: 20,
+    padding: SPACING.lg,
     justifyContent: 'center',
   },
   title: {
     textAlign: 'center',
-    marginBottom: 10,
+    marginBottom: SPACING.sm,
   },
   subtitle: {
     textAlign: 'center',
-    marginBottom: 30,
-  },
-  input: {
-    borderWidth: 1,
-    borderColor: '#ccc',
-    borderRadius: 8,
-    padding: 15,
-    marginBottom: 20,
-    fontSize: 16,
-  },
-  inputError: {
-    borderColor: '#ff3b30',
+    marginBottom: SPACING.xl,
   },
   errorText: {
-    color: '#ff3b30',
-    marginBottom: 20,
+    color: COLORS.danger,
+    marginBottom: SPACING.lg,
     textAlign: 'center',
-  },
-  button: {
-    backgroundColor: '#0a7ea4',
-    padding: 15,
-    borderRadius: 8,
-    alignItems: 'center',
-  },
-  buttonDisabled: {
-    opacity: 0.6,
-  },
-  buttonText: {
-    color: 'white',
-    fontSize: 16,
-    fontWeight: 'bold',
   },
 });
